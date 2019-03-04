@@ -59,7 +59,7 @@ var parseMenu = function (texts) {
 		let menu = {
 			lesto: { primo: [days[0].menu[i]], secondo: [days[1].menu[i]], contorno: [days[2].menu[i]] }
 		}
-		menus[Buffer.from(md.unix().toString() + "000").toString('base64')] = menu
+		menus[Buffer.from(md.format('YYYY-MM-dd')).toString('base64')] = menu
 	}
 	return menus
 }
