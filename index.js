@@ -62,5 +62,5 @@ var parseMenu = function (texts) {
 	return menus;
 }
 
-app.listen(80);
+app.listen(process.env.PORT || 80);
 console.log("http://localhost:80");
