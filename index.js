@@ -13,32 +13,78 @@ pdfParser.on("pdfParser_dataReady", pdfData => {
 	let w4 = parseMenu(pdfData.formImage.Pages[3].Texts)
 	month = JSON.stringify(Object.assign({}, w1, w2, w3, w4))
 })
+const linkToOperaUni="https://www.operauni.tn.it/servizi/ristorazione/menu"
 
-linkToPDF="https://www.operauni.tn.it/documents/10603/20928/Men%C3%B9+settimanale+PASTO+LESTO/a8e0e518-8ee4-47f5-b26e-42e765828700?version=1.1"
- var rp= require('request-promise')
+const $ = require('cheerio');
+ const rp= require('request-promise')
  const fs=require('fs')
- const options = {
-  uri: linkToPDF,
-  method: "GET",
-  encoding: "binary",
-  headers: {
-    "Content-type": "applcation/pdf"
-  }
-};
-//getfileLESTO
- rp(options)
- .then(function(body, data) {
-	 let writeStream = fs.createWriteStream('/tmp/lesto.pdf');
-	   writeStream.write(body, 'binary');
-	   writeStream.on('finish', () => {
-		 pdfParser.loadPDF('/tmp/lesto.pdf')
-		 console.log('parsed data to file.');
-	 });
-	 writeStream.end();
- }).catch(function (err) {
-        console.log(err)
-    });
-//end get file.
+
+ //Obtain PDF's URL.
+rp(linkToOperaUni).then(function(html){
+		//linkgetter
+		const pastoUrls = [];
+		//pastoUrls[0] will be completo
+		//pastoUrls[1] will be lesto.
+		for (let i = 0; i < 2; i++) {// I only care about the first 2 links.
+		 pastoUrls.push($('h4 > a', html)[i].attribs.href);//getting HREF VALUE
+		 //only for <a> tags inside h4
+	 	}
+		//downloader
+		const optionsLesto = {
+		 uri: pastoUrls[1],
+		 method: "GET",
+		 encoding: "binary",
+		 headers: {
+			 "Content-type": "applcation/pdf"
+		 }
+	 };
+	 const optionsCompleto = {
+		uri: pastoUrls[0],
+		method: "GET",
+		encoding: "binary",
+		headers: {
+			"Content-type": "applcation/pdf"
+		}
+	};
+	 //getFileLesto
+		rp(optionsLesto)
+		.then(function(body, data) {
+			let writeStream = fs.createWriteStream('/tmp/lesto.pdf');
+				writeStream.write(body, 'binary');
+				writeStream.on('finish', () => {
+				pdfParser.loadPDF('/tmp/lesto.pdf')
+				console.log('[Lesto]parsed data to file.');
+			});
+			writeStream.end();
+		}).catch(function (err) {
+					 throw err;
+			 });
+
+			 //getFileCompleto
+				rp(optionsCompleto)
+				.then(function(body, data) {
+					let writeStream = fs.createWriteStream('/tmp/completo.pdf');
+						writeStream.write(body, 'binary');
+						writeStream.on('finish', () => {
+						//pdfParser.loadPDF('/tmp/completo.pdf')
+						console.log('[Completo]parsed data to file.');
+					});
+					writeStream.end();
+				}).catch(function (err) {
+							 throw err;
+					 });
+	 //end get file.
+
+  })
+  .catch(function(err){
+    throw err;
+  });
+
+
+
+
+
+
 let app = express()
 app.get('/', function (req, res) {
 	if (!month) return res.status(500).send()
@@ -88,5 +134,5 @@ var parseMenu = function (texts) {
 	return menus
 }
 
-app.listen(process.env.PORT || 8080)
-console.log("http://localhost:8080")
+app.listen(process.env.PORT || 80)
+console.log("http://localhost:80")
