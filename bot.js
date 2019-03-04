@@ -1,4 +1,5 @@
 const express = require('express');
+const moment = require('moment')
 
 let app = express()
 
@@ -6,12 +7,11 @@ let PDFParser = require("pdf2json");
 let pdfParser = new PDFParser();
 pdfParser.on("pdfParser_dataError", errData => console.error(errData.parserError));
 pdfParser.on("pdfParser_dataReady", pdfData => {
-	let weeks = []
-	weeks.push(parseMenu(pdfData.formImage.Pages[0].Texts))
-	weeks.push(parseMenu(pdfData.formImage.Pages[1].Texts))
-	weeks.push(parseMenu(pdfData.formImage.Pages[2].Texts))
-	weeks.push(parseMenu(pdfData.formImage.Pages[3].Texts))
-	_res.send(JSON.stringify(weeks, null, '\t'))
+	let w1 = parseMenu(pdfData.formImage.Pages[0].Texts)
+	let w2 = parseMenu(pdfData.formImage.Pages[1].Texts)
+	let w3 = parseMenu(pdfData.formImage.Pages[2].Texts)
+	let w4 = parseMenu(pdfData.formImage.Pages[3].Texts)
+	_res.send(JSON.stringify(Object.assign({}, w1, w2, w3, w4), null, '\t'))
 });
 var _res;
 
@@ -50,12 +50,14 @@ var parseMenu = function (texts) {
 	} catch (e) {
 		if (e !== 'shit') throw e;
 	}
-	let menus = [];
+	let menus = {};
 	for (let i = 0; i < 5; i++) {
-		menus.push({
-			giorno: daysLabels[i],
-			lesto: [days[0].menu[i], days[1].menu[i], days[2].menu[i]]
-		});
+		let match = daysLabels[i].match('[0-9].*$')
+		let md = moment(match[0], 'DD MMMM')
+		let menu = {
+			lesto: { primo: [days[0].menu[i]], secondo: [days[1].menu[i]], contorno: [days[2].menu[i]] }
+		}
+		menus[Buffer.from(md.unix().toString() + "000").toString('base64')] = menu
 	}
 	return menus;
 }
