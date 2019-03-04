@@ -11,6 +11,7 @@ pdfParser.on("pdfParser_dataReady", pdfData => {
 	let w2 = parseMenu(pdfData.formImage.Pages[1].Texts)
 	let w3 = parseMenu(pdfData.formImage.Pages[2].Texts)
 	let w4 = parseMenu(pdfData.formImage.Pages[3].Texts)
+	_res.set('Content-Type', 'application/json')
 	_res.send(JSON.stringify(Object.assign({}, w1, w2, w3, w4), null, '\t'))
 });
 var _res;
