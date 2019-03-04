@@ -1,3 +1,4 @@
+
 const express = require('express')
 const moment = require('moment')
 const PDFParser = require('pdf2json')
@@ -13,8 +14,31 @@ pdfParser.on("pdfParser_dataReady", pdfData => {
 	month = JSON.stringify(Object.assign({}, w1, w2, w3, w4))
 })
 
-pdfParser.loadPDF('./menu.pdf')
-
+linkToPDF="https://www.operauni.tn.it/documents/10603/20928/Men%C3%B9+settimanale+PASTO+LESTO/a8e0e518-8ee4-47f5-b26e-42e765828700?version=1.1"
+ var rp= require('request-promise')
+ const fs=require('fs')
+ const options = {
+  uri: linkToPDF,
+  method: "GET",
+  encoding: "binary",
+  headers: {
+    "Content-type": "applcation/pdf"
+  }
+};
+//getfileLESTO
+ rp(options)
+ .then(function(body, data) {
+	 let writeStream = fs.createWriteStream('/tmp/lesto.pdf');
+	   writeStream.write(body, 'binary');
+	   writeStream.on('finish', () => {
+		 pdfParser.loadPDF('/tmp/lesto.pdf')
+		 console.log('parsed data to file.');
+	 });
+	 writeStream.end();
+ }).catch(function (err) {
+        console.log(err)
+    });
+//end get file.
 let app = express()
 app.get('/', function (req, res) {
 	if (!month) return res.status(500).send()
@@ -64,5 +88,5 @@ var parseMenu = function (texts) {
 	return menus
 }
 
-app.listen(process.env.PORT || 80)
-console.log("http://localhost:80")
+app.listen(process.env.PORT || 8080)
+console.log("http://localhost:8080")

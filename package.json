@@ -12,7 +12,8 @@
 		"node-schedule": "1.2.5",
 		"pdf2json": "^1.1.8",
 		"promise": "^8.0.1",
-		"request": "^2.88.0"
+		"request": "^2.88.0",
+		"request-promise": "^4.2.4"
 	},
 	"devDependencies": {},
 	"repository": {
