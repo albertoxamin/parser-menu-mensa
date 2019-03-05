@@ -1,10 +1,10 @@
 /* eslint-disable no-console */
 const express = require('express')
-const { fetch } = require('./fetchPdf')
+const  fetch  = require('./fetchPdf')
 
 let lestoMonth = {}
 let interoMonth = {}
-fetch(lestoMonth, interoMonth)
+fetch.fetch(lestoMonth, interoMonth)
 let wasMerged = false
 
 let app = express()
@@ -22,10 +22,14 @@ app.get('/', function (req, res) {
 	}
 	res.send(JSON.stringify(interoMonth))
 })
-
+app.get('/links', function (req, res) {
+	res.set('Content-Type', 'application/json')
+	console.log('requested links')
+	return res.send(JSON.stringify(fetch.links()))
+})
 app.get('/refresh', function (req, res) {
 	console.log('requested a refresh')
-	fetch(lestoMonth, interoMonth)
+	fetch.fetch(lestoMonth, interoMonth)
 	wasMerged = false
 	return res.send('requested')
 })

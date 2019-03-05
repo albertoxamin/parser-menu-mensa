@@ -4,8 +4,11 @@ const request = require('request-promise')
 const fs = require('fs')
 const PDFParser = require('pdf2json')
 const { parseIntero, parseLesto } = require('./parser')
-
+var pastoUrls=[]
 module.exports = {
+	links: function(){
+		return pastoUrls
+	},
 	fetch: function (lestoMonth, completoMonth) {
 		let parserLesto = new PDFParser()
 		let parserIntero = new PDFParser()
@@ -28,7 +31,7 @@ module.exports = {
 		//Obtain PDF's URL.
 		request('https://www.operauni.tn.it/servizi/ristorazione/menu').then(function (html) {
 			//linkgetter
-			const pastoUrls = []
+			pastoUrls=[]
 			//pastoUrls[0] will be completo
 			//pastoUrls[1] will be lesto.
 			for (let i = 0; i < 2; i++) {// I only care about the first 2 links.
