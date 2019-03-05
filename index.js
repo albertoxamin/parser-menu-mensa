@@ -95,6 +95,7 @@ app.get('/', function (req, res) {
 var parseMenu = function (texts) {
 	let days = []
 	let daysLabels = []
+	const percentage="%"
 	try {
 		let j = 0, prev = 0
 		texts.forEach((el, i) => {
@@ -104,7 +105,8 @@ var parseMenu = function (texts) {
 			if (i > 10 && str.length > 6 && str !== 'KCAL' && isNaN(str)) {
 				if (prev === i - 1) {
 					let m = days[Math.floor(j / 5)].menu
-					days[Math.floor(j / 5)].menu[m.length - 1] += ' ' + str
+					if (!str.includes(percentage)) //if str do not has % in it
+						days[Math.floor(j / 5)].menu[m.length - 1] += ' ' + str
 					return
 				}
 				if (days[Math.floor(j / 5)])
@@ -134,5 +136,5 @@ var parseMenu = function (texts) {
 	return menus
 }
 
-app.listen(process.env.PORT || 80)
+app.listen(process.env.PORT || 8080)
 console.log("http://localhost:80")
