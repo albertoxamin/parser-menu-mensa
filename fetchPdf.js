@@ -4,12 +4,16 @@ const request = require('request-promise')
 const fs = require('fs')
 const PDFParser = require('pdf2json')
 const { parseIntero, parseLesto } = require('./parser')
-var pastoUrls=[]
+
+let pastoUrls = []
+let lestoMonth = {}
+let interoMonth = {}
+
 module.exports = {
-	links: function(){
-		return pastoUrls
-	},
-	fetch: function (lestoMonth, completoMonth) {
+	links: () => pastoUrls,
+	lesto: () => lestoMonth,
+	intero: () => interoMonth,
+	fetch: () => {
 		let parserLesto = new PDFParser()
 		let parserIntero = new PDFParser()
 		parserLesto.on('pdfParser_dataReady', pdfData => {
@@ -26,12 +30,12 @@ module.exports = {
 			let w3 = parseIntero(pdfData.formImage.Pages[4].Texts)
 			let w4 = parseIntero(pdfData.formImage.Pages[6].Texts)
 			let w5 = (pdfData.formImage.Pages.length > 8) ? parseIntero(pdfData.formImage.Pages[8].Texts) : {}
-			completoMonth = Object.assign(completoMonth, w1, w2, w3, w4, w5)
+			interoMonth = Object.assign(interoMonth, w1, w2, w3, w4, w5)
 		})
 		//Obtain PDF's URL.
 		request('https://www.operauni.tn.it/servizi/ristorazione/menu').then(function (html) {
 			//linkgetter
-			pastoUrls=[]
+			pastoUrls = []
 			//pastoUrls[0] will be completo
 			//pastoUrls[1] will be lesto.
 			for (let i = 0; i < 2; i++) {// I only care about the first 2 links.
@@ -57,7 +61,7 @@ module.exports = {
 			}
 			//getFileLesto
 			request(optionsLesto)
-				.then(function (body, data) {
+				.then((body, data) => {
 					let writeStream = fs.createWriteStream('/tmp/lesto.pdf')
 					writeStream.write(body, 'binary')
 					writeStream.on('finish', () => {
@@ -65,13 +69,13 @@ module.exports = {
 						console.log('[Lesto]parsed data to file.')
 					})
 					writeStream.end()
-				}).catch(function (err) {
+				}).catch((err) => {
 					throw err
 				})
 
 			//getFileCompleto
 			request(optionsCompleto)
-				.then(function (body, data) {
+				.then((body, data) => {
 					let writeStream = fs.createWriteStream('/tmp/completo.pdf')
 					writeStream.write(body, 'binary')
 					writeStream.on('finish', () => {
@@ -79,11 +83,11 @@ module.exports = {
 						console.log('[Completo]parsed data to file.')
 					})
 					writeStream.end()
-				}).catch(function (err) {
+				}).catch((err) => {
 					throw err
 				})
 			//end get file.
-		}).catch(function (err) {
+		}).catch((err) => {
 			throw err
 		})
 	}

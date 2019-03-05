@@ -1,35 +1,32 @@
 /* eslint-disable no-console */
 const express = require('express')
-const  fetch  = require('./fetchPdf')
+const fetch = require('./fetchPdf')
 
-let lestoMonth = {}
-let interoMonth = {}
-fetch.fetch(lestoMonth, interoMonth)
+fetch.fetch()
 let wasMerged = false
 
 let app = express()
-
-app.get('/', function (req, res) {
+app.get('/', (req, res) => {
 	console.log('requested menus')
-	if (!lestoMonth || !interoMonth) return res.status(500).send()
+	if (!fetch.lesto() || !fetch.intero()) return res.status(500).send()
 	res.set('Content-Type', 'application/json')
 	if (!wasMerged) {
 		wasMerged = true
-		Object.keys(interoMonth).forEach(function (key) {
-			if (lestoMonth[key])
-				interoMonth[key] = Object.assign(interoMonth[key], lestoMonth[key])
+		Object.keys(fetch.intero()).forEach(key => {
+			if (fetch.lesto()[key])
+				fetch.intero()[key] = Object.assign(fetch.intero()[key], fetch.lesto()[key])
 		})
 	}
-	res.send(JSON.stringify(interoMonth))
+	res.send(JSON.stringify(fetch.intero()))
 })
-app.get('/links', function (req, res) {
+app.get('/links', (req, res) => {
 	res.set('Content-Type', 'application/json')
 	console.log('requested links')
 	return res.send(JSON.stringify(fetch.links()))
 })
-app.get('/refresh', function (req, res) {
+app.get('/refresh', (req, res) => {
 	console.log('requested a refresh')
-	fetch.fetch(lestoMonth, interoMonth)
+	fetch.fetch()
 	wasMerged = false
 	return res.send('requested')
 })
