@@ -1,9 +1,30 @@
-const $ = require('cheerio');
+/* eslint-disable no-console */
+const $ = require('cheerio')
 const request = require('request-promise')
 const fs = require('fs')
+const PDFParser = require('pdf2json')
+const { parseIntero, parseLesto } = require('./parser')
 
 module.exports = {
-	fetch: function (pdfParser) {
+	fetch: function (lestoMonth, completoMonth) {
+		let parserLesto = new PDFParser()
+		let parserIntero = new PDFParser()
+		parserLesto.on('pdfParser_dataReady', pdfData => {
+			let w1 = parseLesto(pdfData.formImage.Pages[0].Texts)
+			let w2 = parseLesto(pdfData.formImage.Pages[1].Texts)
+			let w3 = parseLesto(pdfData.formImage.Pages[2].Texts)
+			let w4 = parseLesto(pdfData.formImage.Pages[3].Texts)
+			let w5 = (pdfData.formImage.Pages.length > 4) ? parseLesto(pdfData.formImage.Pages[4].Texts) : {}
+			lestoMonth = Object.assign(lestoMonth, w1, w2, w3, w4, w5)
+		})
+		parserIntero.on('pdfParser_dataReady', pdfData => {
+			let w1 = parseIntero(pdfData.formImage.Pages[0].Texts)
+			let w2 = parseIntero(pdfData.formImage.Pages[2].Texts)
+			let w3 = parseIntero(pdfData.formImage.Pages[4].Texts)
+			let w4 = parseIntero(pdfData.formImage.Pages[6].Texts)
+			let w5 = (pdfData.formImage.Pages.length > 8) ? parseIntero(pdfData.formImage.Pages[8].Texts) : {}
+			completoMonth = Object.assign(completoMonth, w1, w2, w3, w4, w5)
+		})
 		//Obtain PDF's URL.
 		request('https://www.operauni.tn.it/servizi/ristorazione/menu').then(function (html) {
 			//linkgetter
@@ -17,18 +38,18 @@ module.exports = {
 			//downloader
 			const optionsLesto = {
 				uri: pastoUrls[1],
-				method: "GET",
-				encoding: "binary",
+				method: 'GET',
+				encoding: 'binary',
 				headers: {
-					"Content-type": "applcation/pdf"
+					'Content-type': 'applcation/pdf'
 				}
 			}
 			const optionsCompleto = {
 				uri: pastoUrls[0],
-				method: "GET",
-				encoding: "binary",
+				method: 'GET',
+				encoding: 'binary',
 				headers: {
-					"Content-type": "applcation/pdf"
+					'Content-type': 'applcation/pdf'
 				}
 			}
 			//getFileLesto
@@ -37,7 +58,7 @@ module.exports = {
 					let writeStream = fs.createWriteStream('/tmp/lesto.pdf')
 					writeStream.write(body, 'binary')
 					writeStream.on('finish', () => {
-						pdfParser.loadPDF('/tmp/lesto.pdf')
+						parserLesto.loadPDF('/tmp/lesto.pdf')
 						console.log('[Lesto]parsed data to file.')
 					})
 					writeStream.end()
@@ -51,10 +72,10 @@ module.exports = {
 					let writeStream = fs.createWriteStream('/tmp/completo.pdf')
 					writeStream.write(body, 'binary')
 					writeStream.on('finish', () => {
-						//pdfParser.loadPDF('/tmp/completo.pdf')
+						parserIntero.loadPDF('/tmp/completo.pdf')
 						console.log('[Completo]parsed data to file.')
 					})
-					writeStream.end();
+					writeStream.end()
 				}).catch(function (err) {
 					throw err
 				})
