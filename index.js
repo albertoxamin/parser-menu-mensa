@@ -1,3 +1,4 @@
+/* eslint-disable no-console */
 
 const express = require('express')
 const moment = require('moment')
@@ -6,8 +7,8 @@ const { fetch } = require('./fetchPdf')
 
 let pdfParser = new PDFParser()
 let month = ''
-pdfParser.on("pdfParser_dataError", errData => console.error(errData.parserError))
-pdfParser.on("pdfParser_dataReady", pdfData => {
+pdfParser.on('pdfParser_dataError', errData => console.error(errData.parserError))
+pdfParser.on('pdfParser_dataReady', pdfData => {
 	let w1 = parseMenu(pdfData.formImage.Pages[0].Texts)
 	let w2 = parseMenu(pdfData.formImage.Pages[1].Texts)
 	let w3 = parseMenu(pdfData.formImage.Pages[2].Texts)
@@ -24,10 +25,9 @@ app.get('/', function (req, res) {
 	res.send(month)
 })
 
-var parseMenu = function (texts) {
+const parseMenu = function (texts) {
 	let days = []
 	let daysLabels = []
-	const percentage="%"
 	try {
 		let j = 0, prev = 0
 		texts.forEach((el, i) => {
@@ -35,12 +35,12 @@ var parseMenu = function (texts) {
 			if (str === 'LEGENDA')
 				throw 'shit'
 			//da i > 10 iniziano i menu
-			if (i > 10 && str.length > 6 && str !== 'KCAL' && isNaN(str)) {
+			if (i > 10 && str !== 'KCAL' && isNaN(str)) {
 				let row = Math.floor(j / 5)
-				if (prev === i - 1) {
+				if (prev === i - 1 && days[row] && days[row].menu) {
 					//qui dentro provo ad attaccare le cose che vanno a capo
 					let m = days[row].menu
-					if (!str.includes(percentage)) //if str do not has % in it
+					if (str.indexOf('%') === -1) //if str do not has % in it
 						days[row].menu[m.length - 1] += ' ' + str
 					return
 				}
@@ -72,4 +72,4 @@ var parseMenu = function (texts) {
 }
 
 app.listen(process.env.PORT || 8080)
-console.log("http://localhost:8080")
+console.log('http://localhost:8080')
