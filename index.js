@@ -13,7 +13,8 @@ pdfParser.on('pdfParser_dataReady', pdfData => {
 	let w2 = parseMenu(pdfData.formImage.Pages[1].Texts)
 	let w3 = parseMenu(pdfData.formImage.Pages[2].Texts)
 	let w4 = parseMenu(pdfData.formImage.Pages[3].Texts)
-	month = JSON.stringify(Object.assign({}, w1, w2, w3, w4))
+	let w5 = (pdfData.formImage.Pages.length > 4) ? parseMenu(pdfData.formImage.Pages[4].Texts) : {}
+	month = JSON.stringify(Object.assign({}, w1, w2, w3, w4, w5))
 })
 
 fetch(pdfParser)
@@ -35,7 +36,7 @@ const parseMenu = function (texts) {
 			if (str === 'LEGENDA')
 				throw 'shit'
 			//da i > 10 iniziano i menu
-			if (i > 10 && str !== 'KCAL' && isNaN(str)) {
+			if (i > 10 && str !== 'KCAL' && isNaN(str) && str !== '13%2C7') {
 				let row = Math.floor(j / 5)
 				if (prev === i - 1 && days[row] && days[row].menu) {
 					//qui dentro provo ad attaccare le cose che vanno a capo
