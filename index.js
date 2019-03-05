@@ -36,7 +36,7 @@ const parseMenu = function (texts) {
 			if (str === 'LEGENDA')
 				throw 'shit'
 			//da i > 10 iniziano i menu
-			if (i > 10 && str !== 'KCAL' && isNaN(str) && str !== '13%2C7') {
+			if (i > 10 && str !== 'KCAL' && isNaN(str) && str.indexOf('%2') === -1) {
 				let row = Math.floor(j / 5)
 				if (prev === i - 1 && days[row] && days[row].menu) {
 					//qui dentro provo ad attaccare le cose che vanno a capo
