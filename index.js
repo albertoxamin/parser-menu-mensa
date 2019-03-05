@@ -27,6 +27,7 @@ app.get('/', function (req, res) {
 var parseMenu = function (texts) {
 	let days = []
 	let daysLabels = []
+	const percentage="%"
 	try {
 		let j = 0, prev = 0
 		texts.forEach((el, i) => {
@@ -39,7 +40,8 @@ var parseMenu = function (texts) {
 				if (prev === i - 1) {
 					//qui dentro provo ad attaccare le cose che vanno a capo
 					let m = days[row].menu
-					days[row].menu[m.length - 1] += ' ' + str
+					if (!str.includes(percentage)) //if str do not has % in it
+						days[row].menu[m.length - 1] += ' ' + str
 					return
 				}
 				if (days[row])
@@ -69,5 +71,5 @@ var parseMenu = function (texts) {
 	return menus
 }
 
-app.listen(process.env.PORT || 80)
-console.log("http://localhost:80")
+app.listen(process.env.PORT || 8080)
+console.log("http://localhost:8080")
