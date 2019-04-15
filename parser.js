@@ -85,7 +85,11 @@ module.exports = {
 		for (let i = 0; i < 5; i++) {
 			let md = moment(daysLabels[i], 'DD MMMM')
 			let menu = {
-				lesto: { primo: [days[0].menu[i]], secondo: [days[1].menu[i]], contorno: [days[2].menu[i]] }
+				lesto: {
+					primo: [days[0] ? days[0].menu[i] : ''],
+					secondo: [days[1] ? days[1].menu[i] : ''],
+					contorno: [days[2] ? days[2].menu[i] : '']
+				}
 			}
 			menus[Buffer.from(md.format('YYYY-MM-DD')).toString('base64')] = menu
 		}
