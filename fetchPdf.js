@@ -28,7 +28,7 @@ module.exports = {
 			let w1 = parseIntero(pdfData.formImage.Pages[0].Texts)
 			let w2 = parseIntero(pdfData.formImage.Pages[2].Texts)
 			let w3 = parseIntero(pdfData.formImage.Pages[4].Texts)
-			let w4 = parseIntero(pdfData.formImage.Pages[6].Texts)
+			let w4 = (pdfData.formImage.Pages.length > 6) ? parseIntero(pdfData.formImage.Pages[6].Texts) : {}
 			let w5 = (pdfData.formImage.Pages.length > 8) ? parseIntero(pdfData.formImage.Pages[8].Texts) : {}
 			interoMonth = Object.assign(interoMonth, w1, w2, w3, w4, w5)
 		})
