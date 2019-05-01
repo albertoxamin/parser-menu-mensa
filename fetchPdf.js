@@ -42,9 +42,10 @@ module.exports = {
 				pastoUrls.push($('h4 > a', html)[i].attribs.href)//getting HREF VALUE
 				//only for <a> tags inside h4
 			}
+			let isFirstLesto = pastoUrls[0].indexOf('LESTO') !== -1
 			//downloader
 			const optionsLesto = {
-				uri: pastoUrls[1],
+				uri: pastoUrls[isFirstLesto ? 0 : 1],
 				method: 'GET',
 				encoding: 'binary',
 				headers: {
@@ -52,7 +53,7 @@ module.exports = {
 				}
 			}
 			const optionsCompleto = {
-				uri: pastoUrls[0],
+				uri: pastoUrls[isFirstLesto ? 1 : 0],
 				method: 'GET',
 				encoding: 'binary',
 				headers: {
